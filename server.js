@@ -16,9 +16,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/chat", async (req, res) => {
-
     try {
-
         const userMessage = req.body.message;
 
         if (!userMessage) {
@@ -27,4 +25,26 @@ app.post("/chat", async (req, res) => {
             });
         }
 
-        cons
+        const response = await client.responses.create({
+            model: "gpt-5-mini",
+            input: userMessage
+        });
+
+        res.json({
+            reply: response.output_text
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Foday AI server running on port ${PORT}`);
+});
