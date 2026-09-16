@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Foday AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header p {
+            font-size: 13px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .ai {
+            background: #e5e7eb;
+            color: #111827;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user {
+            background: #2563eb;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid #ddd;
+            background: white;
+        }
+
+        #messageInput {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 22px;
+            padding: 12px 15px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        #sendButton {
+            border: none;
+            background: #2563eb;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #sendButton:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="header">
+        <h1>Foday AI</h1>
+        <p>Your personal AI assistant</p>
+    </div>
+
+    <div class="chat" id="chat">
+
+        <div class="message ai">
+            Hello! I'm Foday AI. 👋<br>
+            I'm ready to help you.
+        </div>
+
+    </div>
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="messageInput"
+            placeholder="Ask Foday AI anything..."
+        >
+
+        <button id="sendButton">➤</button>
+
+    </div>
+
+</div>
+
+<script>
+
+    const input = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+    const chat = document.getElementById("chat");
+
+    function addMessage(text, type) {
+
+        const message = document.createElement("div");
+
+        message.className = "message " + type;
+
+        message.innerText = text;
+
+        chat.appendChild(message);
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function sendMessage() {
+
+        const text = input.value.trim();
+
+        if (text === "") {
+            return;
+        }
+
+        addMessage(text, "user");
+
+        input.value = "";
+
+        fetch("https://foday-ai.onrender.com/chat", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        message: text
+    })
+})
+.then(response => response.json())
+.then(data => {
+    addMessage(data.reply, "ai");
+})
+.catch(error => {
+    console.error(error);
+    addMessage("Sorry, I couldn't connect to Foday AI.", "ai");
+});
+    }
+
+    sendButton.addEventListener("click", sendMessage);
+
+    input.addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
